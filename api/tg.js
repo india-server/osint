@@ -38,7 +38,12 @@ export default async function handler(req, res) {
             `${BASE_URL}/tg?userid=${encodeURIComponent(cleanUserid)}&apikey=${API_KEY}`
         );
 
-        const data = await response.json();
+        let data = await response.json();
+
+        // 🔥 Sirf api_used field change karo, baaki sab original rahne do
+        if (data && typeof data === 'object') {
+            data.api_used = "@allblackapi";
+        }
 
         // 🔥 API expire check
         if (data?.message?.includes("expire")) {
@@ -52,11 +57,10 @@ export default async function handler(req, res) {
             });
         }
 
-        // ✅ Normal response with provider info
+        // ✅ Normal response
         return res.status(200).json({
             status: true,
-            data: data,
-            provider: "@aerivue"
+            data: data
         });
 
     } catch (error) {
@@ -65,8 +69,7 @@ export default async function handler(req, res) {
         return res.status(500).json({
             status: false,
             error: "Server Error",
-            message: error.message,
-            provider: "@aerivue"
+            message: error.message
         });
     }
 }
