@@ -1,174 +1,441 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BLACK_API_BOX | DEMON PANEL</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            background: #0a0c0f;
-            font-family: 'Inter', monospace;
-            padding: 2rem;
-            color: #e3e6f0;
-        }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        .header {
-            border-left: 4px solid #ff3a2f;
-            padding-left: 1.2rem;
-            margin-bottom: 2rem;
-        }
-        h1 {
-            font-size: 2rem;
-            background: linear-gradient(135deg, #ff5f4a, #b91c1c);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 1.5rem;
-        }
-        .card {
-            background: #111216;
-            border-radius: 24px;
-            border: 1px solid #2c2f3a;
-            overflow: hidden;
-        }
-        .card-header {
-            background: #0b0d11;
-            padding: 1rem;
-            border-bottom: 1px solid #2c2f3a;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        .input-group {
-            padding: 1rem;
-        }
-        input {
-            width: 100%;
-            background: #08090e;
-            border: 1px solid #2c2f3a;
-            padding: 10px;
-            border-radius: 40px;
-            color: white;
-            margin-bottom: 10px;
-            font-family: monospace;
-        }
-        button {
-            width: 100%;
-            background: #1f212e;
-            border: 1px solid #ff3a2f;
-            color: #ffb4ac;
-            padding: 10px;
-            border-radius: 40px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #ff3a2f;
-            color: black;
-        }
-        .response {
-            background: #050608;
-            padding: 1rem;
-            font-family: monospace;
-            font-size: 0.7rem;
-            overflow-x: auto;
-            max-height: 300px;
-            overflow-y: auto;
-            border-top: 1px solid #2c2f3a;
-        }
-        pre {
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-        .loading {
-            color: #ffa36e;
-        }
-        .error {
-            color: #ff6b5b;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aerivue — Intelligence Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:       #05050f;
+  --s0:        #080814;
+  --s1:        rgba(255,255,255,0.03);
+  --s2:        rgba(255,255,255,0.06);
+  --border:    rgba(255,255,255,0.07);
+  --violet:    #8b5cf6;
+  --rose:      #f43f5e;
+  --cyan:      #22d3ee;
+  --white:     #f1f5f9;
+  --muted:     #475569;
+  --success:   #34d399;
+  --error:     #f87171;
+  --gv: rgba(139,92,246,0.18);
+  --gr: rgba(244,63,94,0.14);
+  --gc: rgba(34,211,238,0.12);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Syne',sans-serif;
+  background:var(--s0);
+  color:var(--white);
+  min-height:100vh;
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* Cursor */
+#cur{width:10px;height:10px;background:var(--violet);border-radius:50%;position:fixed;z-index:9999;pointer-events:none;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .2s,height .2s,background .2s;}
+#ring{width:36px;height:36px;border:1px solid rgba(139,92,246,.45);border-radius:50%;position:fixed;z-index:9998;pointer-events:none;transform:translate(-50%,-50%);}
+body:has(button:hover) #cur{width:18px;height:18px;background:var(--rose);}
+body:has(a:hover) #cur{width:18px;height:18px;background:var(--cyan);}
+
+/* Ambient */
+.amb{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.35;animation:drift linear infinite alternate;}
+.o1{width:560px;height:560px;background:radial-gradient(circle,var(--violet) 0%,transparent 70%);top:-180px;left:-120px;animation-duration:20s;}
+.o2{width:400px;height:400px;background:radial-gradient(circle,var(--rose) 0%,transparent 70%);bottom:-100px;right:-100px;animation-duration:25s;}
+.o3{width:300px;height:300px;background:radial-gradient(circle,var(--cyan) 0%,transparent 70%);top:40%;left:55%;opacity:.15;animation-duration:18s;}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}50%{transform:translate(25px,-20px) scale(1.04)}100%{transform:translate(-15px,25px) scale(.97)}}
+
+/* Grid lines */
+.gl{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.014) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.014) 1px,transparent 1px);background-size:60px 60px;}
+
+/* Grain */
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px;}
+
+/* Scanlines */
+.scan{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0,transparent 3px,rgba(0,0,0,.022) 3px,rgba(0,0,0,.022) 4px);}
+
+/* Canvas */
+#cv{position:fixed;inset:0;z-index:998;pointer-events:none;}
+
+/* ── Telegram Bar ── */
+.tgbar{
+  position:fixed;top:18px;left:50%;transform:translateX(-50%);
+  z-index:600;
+  display:flex;align-items:center;gap:12px;
+  padding:9px 18px 9px 12px;
+  background:rgba(8,8,20,.88);
+  backdrop-filter:blur(28px) saturate(160%);
+  border:1px solid rgba(34,211,238,.2);
+  border-radius:100px;
+  text-decoration:none;color:var(--white);
+  box-shadow:0 0 0 1px rgba(34,211,238,.05),0 20px 50px rgba(0,0,0,.6);
+  transition:border-color .3s,box-shadow .3s;
+  animation:dropIn .9s cubic-bezier(.34,1.56,.64,1) both;
+  white-space:nowrap;
+}
+.tgbar:hover{border-color:rgba(34,211,238,.45);box-shadow:0 0 30px rgba(34,211,238,.18),0 20px 50px rgba(0,0,0,.6);}
+@keyframes dropIn{from{opacity:0;transform:translateX(-50%) translateY(-28px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+.tgav{width:30px;height:30px;background:linear-gradient(135deg,#229ED9,#0e76a8);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 12px rgba(34,158,217,.4);}
+.tgav svg{width:15px;height:15px;fill:#fff;}
+.tginfo{display:flex;flex-direction:column;gap:1px;}
+.tglabel{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:500;}
+.tghandle{font-size:.78rem;font-weight:700;color:var(--cyan);letter-spacing:.5px;}
+.tgpulse{width:7px;height:7px;background:var(--success);border-radius:50%;box-shadow:0 0 8px var(--success);animation:pd 2s ease infinite;}
+@keyframes pd{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.65)}}
+.tgcta{padding:5px 14px;border-radius:100px;background:linear-gradient(135deg,var(--cyan),#818cf8);color:var(--ink);font-family:'Syne',sans-serif;font-size:.6rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;position:relative;overflow:hidden;}
+.tgcta::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);transform:translateX(-100%);animation:shim 2.5s ease infinite;}
+@keyframes shim{to{transform:translateX(100%)}}
+
+/* ── Page ── */
+.page{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:108px 28px 80px;}
+
+/* ── Header ── */
+.header{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:60px;animation:rise .8s cubic-bezier(.22,1,.36,1) both .1s;}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+.lockup{display:flex;align-items:center;gap:16px;margin-bottom:12px;}
+.amark{width:48px;height:48px;flex-shrink:0;}
+.amark svg{width:100%;height:100%;}
+.wordmark{font-family:'Syne',sans-serif;font-size:2.8rem;font-weight:800;letter-spacing:.2em;background:linear-gradient(110deg,#fff 0%,var(--violet) 38%,var(--rose) 65%,var(--cyan) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.hmeta{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:18px;}
+.hstatus{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border:1px solid rgba(52,211,153,.22);border-radius:100px;background:rgba(52,211,153,.05);font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--success);letter-spacing:1.5px;text-transform:uppercase;}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--success);box-shadow:0 0 8px var(--success);animation:pd 1.8s ease infinite;}
+
+/* ── Divider ── */
+.dvd{display:flex;align-items:center;gap:14px;margin-bottom:28px;animation:rise .8s ease both .22s;}
+.dvdl{flex:1;height:1px;background:var(--border);}
+.dvdt{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);letter-spacing:3px;text-transform:uppercase;}
+
+/* ── Grid ── */
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px;}
+
+/* ── Card ── */
+.card{
+  position:relative;
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:24px;
+  overflow:hidden;
+  transition:border-color .35s,box-shadow .35s,transform .35s;
+  animation:rise .7s ease both;
+}
+.card:nth-child(1){animation-delay:.14s}
+.card:nth-child(2){animation-delay:.19s}
+.card:nth-child(3){animation-delay:.24s}
+.card:nth-child(4){animation-delay:.29s}
+.card:nth-child(5){animation-delay:.34s}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--ca,var(--violet)),transparent);opacity:.8;}
+.card::after{content:'';position:absolute;top:-60px;right:-60px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,var(--cg,var(--gv)) 0%,transparent 70%);pointer-events:none;opacity:.5;transition:opacity .4s;}
+.card:hover{border-color:var(--ca);box-shadow:0 0 0 1px var(--ca),0 24px 60px rgba(0,0,0,.35),0 0 60px var(--cg);}
+.card:hover::after{opacity:1;}
+.card:hover{transform:translateY(-4px);}
+.cv{--ca:var(--violet);--cg:var(--gv);}
+.cr{--ca:var(--rose);  --cg:var(--gr);}
+.cc{--ca:var(--cyan);  --cg:var(--gc);}
+
+.chead{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;}
+.cico{width:38px;height:38px;border-radius:9px;border:1px solid var(--border);background:var(--s2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cico svg{width:17px;height:17px;}
+.ctitles{margin-left:11px;flex:1;}
+.cname{font-size:.88rem;font-weight:700;color:var(--white);letter-spacing:.03em;line-height:1.2;}
+.cdesc{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--muted);letter-spacing:1px;margin-top:3px;text-transform:uppercase;}
+.cbadge{font-family:'JetBrains Mono',monospace;font-size:.52rem;font-weight:500;padding:3px 9px;border-radius:100px;border:1px solid;letter-spacing:1px;text-transform:uppercase;align-self:flex-start;}
+.bv{color:var(--violet);border-color:rgba(139,92,246,.3);background:rgba(139,92,246,.08);}
+.br{color:var(--rose);border-color:rgba(244,63,94,.3);background:rgba(244,63,94,.08);}
+.bc{color:var(--cyan);border-color:rgba(34,211,238,.3);background:rgba(34,211,238,.08);}
+
+/* Input */
+.fl{position:relative;margin-bottom:11px;}
+.flab{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;display:block;}
+.fl input{width:100%;padding:11px 14px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;color:var(--white);font-family:'JetBrains Mono',monospace;font-size:.77rem;outline:none;letter-spacing:.5px;transition:border-color .3s,box-shadow .3s,background .3s;}
+.fl input::placeholder{color:#2d3f57;}
+.cv .fl input:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(139,92,246,.1);background:rgba(0,0,0,.5);}
+.cr .fl input:focus{border-color:var(--rose);box-shadow:0 0 0 3px rgba(244,63,94,.1);background:rgba(0,0,0,.5);}
+.cc .fl input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(34,211,238,.1);background:rgba(0,0,0,.5);}
+
+/* Button */
+.fbtn{width:100%;padding:12px;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:opacity .2s,transform .15s;}
+.fv{background:linear-gradient(135deg,#7c3aed,#8b5cf6,#a78bfa);color:#fff;box-shadow:0 4px 22px rgba(139,92,246,.28);}
+.fr{background:linear-gradient(135deg,#e11d48,#f43f5e,#fb7185);color:#fff;box-shadow:0 4px 22px rgba(244,63,94,.28);}
+.fc{background:linear-gradient(135deg,#0891b2,#22d3ee,#67e8f9);color:var(--ink);box-shadow:0 4px 22px rgba(34,211,238,.22);}
+.fbtn:hover{opacity:.9;transform:translateY(-1px);}
+.fbtn:active{transform:translateY(1px);}
+.fbtn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+.fbtn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);transition:none;}
+.fbtn:hover::before{left:100%;transition:left .5s ease;}
+.fbtn.ld{pointer-events:none;}
+.fbtn.ld .bt{opacity:0;}
+.fbtn.ld::after{content:'';position:absolute;top:50%;left:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .65s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Response */
+.rw{margin-top:12px;border-radius:10px;border:1px solid var(--border);background:rgba(0,0,0,.35);overflow:hidden;transition:border-color .3s;}
+.rw.ok{border-color:rgba(52,211,153,.2);}
+.rw.er{border-color:rgba(248,113,113,.2);}
+.rbar{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.2);}
+.rbarleft{font-family:'JetBrains Mono',monospace;font-size:.54rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
+.rdot{width:6px;height:6px;border-radius:50%;background:var(--muted);transition:background .3s,box-shadow .3s;}
+.ok .rdot{background:var(--success);box-shadow:0 0 8px var(--success);}
+.er .rdot{background:var(--error);box-shadow:0 0 8px var(--error);}
+.rbody{padding:12px;font-family:'JetBrains Mono',monospace;font-size:.67rem;line-height:1.7;color:#64748b;max-height:180px;overflow-y:auto;word-break:break-all;}
+.rbody::-webkit-scrollbar{width:3px;}
+.rbody::-webkit-scrollbar-thumb{background:rgba(139,92,246,.25);border-radius:2px;}
+.ri{color:#2d3f57;font-style:italic;}
+.jk{color:var(--violet);}
+.js{color:var(--cyan);}
+.jn{color:#fb923c;}
+.jb{color:var(--rose);}
+.re{color:var(--error);}
+
+/* Footer */
+.foot{position:relative;z-index:2;padding:48px 28px 32px;display:flex;flex-direction:column;align-items:center;gap:8px;}
+.fwm{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;letter-spacing:.32em;background:linear-gradient(90deg,var(--violet),var(--rose),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.fcopy{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+
+@media(max-width:600px){
+  .wordmark{font-size:2rem;}
+  .agrid{grid-template-columns:1fr;}
+  .tgcta{display:none;}
+}
+</style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <h1>🔻 BLACK_API_BOX | DEMON DATA PANEL</h1>
-        <p style="color:#8f9bb5;">⚡ .env secured | Vercel API routes | Raw data direct dikhega</p>
-    </div>
 
-    <div class="grid" id="apiGrid"></div>
+<div id="cur"></div>
+<div id="ring"></div>
+<canvas id="cv"></canvas>
 
-    <div style="margin-top: 2rem; text-align: center; font-size: 0.7rem; color: #4f5b7a;">
-        🔥 DEMON_MODE ACTIVE | Keys stored in Vercel Environment Variables | No refusal
+<div class="amb">
+  <div class="orb o1"></div>
+  <div class="orb o2"></div>
+  <div class="orb o3"></div>
+</div>
+<div class="gl"></div>
+<div class="grain"></div>
+<div class="scan"></div>
+
+<!-- Telegram Bar -->
+<a class="tgbar" href="https://t.me/aerivue" target="_blank" rel="noopener">
+  <div class="tgav">
+    <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.25-2.01 9.47c-.148.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.873.75z"/></svg>
+  </div>
+  <div class="tginfo">
+    <span class="tglabel">Official Channel</span>
+    <span class="tghandle">@Aerivue</span>
+  </div>
+  <div class="tgpulse"></div>
+  <div class="tgcta">Join Now</div>
+</a>
+
+<div class="page">
+  <header class="header">
+    <div class="lockup">
+      <div class="amark">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="lg" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#8b5cf6"/>
+              <stop offset="50%" stop-color="#f43f5e"/>
+              <stop offset="100%" stop-color="#22d3ee"/>
+            </linearGradient>
+          </defs>
+          <polygon points="24,4 44,40 4,40" stroke="url(#lg)" stroke-width="2.4" fill="none" stroke-linejoin="round"/>
+          <line x1="13" y1="30" x2="35" y2="30" stroke="url(#lg)" stroke-width="1.8" opacity=".7"/>
+          <circle cx="24" cy="4"  r="2.4" fill="url(#lg)"/>
+          <circle cx="44" cy="40" r="2.4" fill="url(#lg)"/>
+          <circle cx="4"  cy="40" r="2.4" fill="url(#lg)"/>
+        </svg>
+      </div>
+      <h1 class="wordmark">AERIVUE</h1>
     </div>
+    <p class="hmeta">Intelligence API Panel &nbsp;/&nbsp; v2.0</p>
+    <div class="hstatus">
+      <span class="sdot"></span>
+      All Systems Operational
+    </div>
+  </header>
+
+  <div class="dvd">
+    <div class="dvdl"></div>
+    <span class="dvdt">API Endpoints</span>
+    <div class="dvdl"></div>
+  </div>
+
+  <div class="agrid" id="grid"></div>
 </div>
 
+<footer class="foot">
+  <div class="fwm">AERIVUE</div>
+  <div class="fcopy">Intelligence Panel &mdash; Engineered by Aerivue</div>
+</footer>
+
 <script>
-    const APIS = [
-        { id: "lookup", name: "📞 NUMBER LOOKUP", label: "Phone Number", placeholder: "7234928424", param: "number" },
-        { id: "imei", name: "📱 IMEI TRACK", label: "IMEI Number", placeholder: "353010111111110", param: "imei" },
-        { id: "aadhar", name: "🆔 AADHAR VERIFY", label: "Aadhar Number", placeholder: "759028633824", param: "aadhar" },
-        { id: "rto", name: "🚗 RTO VEHICLE", label: "RC Number", placeholder: "KL43G1669", param: "rc" },
-        { id: "tg", name: "📡 TELEGRAM USER", label: "User ID", placeholder: "7762198186", param: "userid" }
-    ];
+const EPS = [
+  { id:'lookup', name:'Number Lookup',   desc:'Telecom intelligence',    param:'number', ph:'7234928424',      v:'cv', btn:'fv', badge:'bv',
+    ico:`<svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.6"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .92h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.72a16 16 0 006.29 6.29l1.08-1.08a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>` },
+  { id:'imei',   name:'IMEI Info',        desc:'Device identification',   param:'imei',   ph:'353010111111110', v:'cc', btn:'fc', badge:'bc',
+    ico:`<svg viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.6"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-linecap="round" stroke-width="2.4"/></svg>` },
+  { id:'aadhar', name:'Aadhar Verify',    desc:'Identity verification',   param:'aadhar', ph:'759028633824',    v:'cr', btn:'fr', badge:'br',
+    ico:`<svg viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 10a2 2 0 104 0 2 2 0 00-4 0zM12 14c-2.67 0-8 1.34-8 4h16c0-2.66-5.33-4-8-4z"/></svg>` },
+  { id:'rto',    name:'Vehicle Info',     desc:'RTO registration data',   param:'rc',     ph:'KL43G1669',      v:'cv', btn:'fv', badge:'bv',
+    ico:`<svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.6"><path d="M7 17H2v-5l3-7h10l3 7v5h-5"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M5 12h14"/></svg>` },
+  { id:'tg',     name:'Telegram User',    desc:'Account intelligence',    param:'userid', ph:'7762198186',     v:'cc', btn:'fc', badge:'bc',
+    ico:`<svg viewBox="0 0 24 24" fill="#22d3ee"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.25-2.01 9.47c-.148.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.873.75z"/></svg>` }
+];
 
-    function renderCards() {
-        const grid = document.getElementById('apiGrid');
-        grid.innerHTML = '';
-        
-        APIS.forEach(api => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="card-header">${api.name}</div>
-                <div class="input-group">
-                    <input type="text" id="input-${api.id}" placeholder="${api.placeholder}" value="${api.placeholder}">
-                    <button onclick="fetchData('${api.id}', '${api.param}')">⚡ FETCH DATA</button>
-                </div>
-                <div class="response" id="response-${api.id}">
-                    <span style="color:#6c7a9e;">💀 waiting for command</span>
-                </div>
-            `;
-            grid.appendChild(card);
-        });
+function render() {
+  const g = document.getElementById('grid');
+  g.innerHTML = '';
+  EPS.forEach(e => {
+    const d = document.createElement('div');
+    d.className = `card ${e.v}`;
+    d.innerHTML = `
+      <div class="chead">
+        <div class="cico">${e.ico}</div>
+        <div class="ctitles">
+          <div class="cname">${e.name}</div>
+          <div class="cdesc">${e.desc}</div>
+        </div>
+        <span class="cbadge ${e.badge}">Live</span>
+      </div>
+      <div class="fl">
+        <label class="flab" for="i-${e.id}">Query Input</label>
+        <input id="i-${e.id}" type="text" placeholder="${e.ph}" autocomplete="off" spellcheck="false">
+      </div>
+      <button class="fbtn ${e.btn}" id="b-${e.id}" onclick="qry('${e.id}','${e.param}')">
+        <span class="bt">Execute Query</span>
+      </button>
+      <div class="rw" id="w-${e.id}">
+        <div class="rbar">
+          <span class="rbarleft">Response Stream</span>
+          <span class="rdot"></span>
+        </div>
+        <div class="rbody" id="r-${e.id}"><span class="ri">// Awaiting input...</span></div>
+      </div>`;
+    g.appendChild(d);
+  });
+}
+
+function hl(json) {
+  return json
+    .replace(/("[\w\s\-]+")\s*:/g,'<span class="jk">$1</span>:')
+    .replace(/:\s*(".*?")/g,(m,s)=>m.replace(s,`<span class="js">${s}</span>`))
+    .replace(/:\s*(\d+\.?\d*)/g,(m,n)=>m.replace(n,`<span class="jn">${n}</span>`))
+    .replace(/:\s*(true|false|null)/g,(m,b)=>m.replace(b,`<span class="jb">${b}</span>`));
+}
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+async function qry(id, param) {
+  const inp = document.getElementById(`i-${id}`);
+  const btn = document.getElementById(`b-${id}`);
+  const w   = document.getElementById(`w-${id}`);
+  const r   = document.getElementById(`r-${id}`);
+  const val = inp.value.trim() || inp.placeholder;
+
+  btn.classList.add('ld'); btn.disabled = true;
+  w.className = 'rw';
+  r.innerHTML = '<span class="ri">// Fetching...</span>';
+
+  try {
+    const res  = await fetch(`/api/${id}?${param}=${encodeURIComponent(val)}`);
+    const data = await res.json();
+    const json = JSON.stringify(data, null, 2);
+    w.classList.add('ok');
+    r.innerHTML = `<pre>${hl(esc(json))}</pre>`;
+    burst(btn);
+  } catch(_) {
+    w.classList.add('er');
+    r.innerHTML = `<span class="re">Error — Could not reach endpoint.<br>Ensure the API server is running.</span>`;
+  } finally {
+    btn.classList.remove('ld');
+    btn.disabled = false;
+  }
+}
+
+/* ── Particle Burst ── */
+const cv = document.getElementById('cv');
+const cx = cv.getContext('2d');
+let parts = [];
+const COLS = ['#8b5cf6','#f43f5e','#22d3ee','#a78bfa','#fb7185','#67e8f9','#fff','#fbbf24'];
+
+function resize(){ cv.width=innerWidth; cv.height=innerHeight; }
+resize(); addEventListener('resize', resize);
+
+function burst(el) {
+  const rc = el.getBoundingClientRect();
+  const ox = rc.left + rc.width/2, oy = rc.top + rc.height/2;
+  for (let i=0;i<80;i++){
+    const a = Math.random()*Math.PI*2;
+    const sp = 1.5 + Math.random()*7;
+    const sz = 1.2 + Math.random()*4;
+    const life = 0.55 + Math.random()*.7;
+    const col  = COLS[Math.floor(Math.random()*COLS.length)];
+    const type = Math.random();
+    parts.push({
+      x:ox, y:oy,
+      vx:Math.cos(a)*sp, vy:Math.sin(a)*sp - Math.random()*2.5,
+      sz, col, life, ml:life,
+      g: .06+Math.random()*.08,
+      type, // 0-.4=circle, .4-.7=line, .7-1=cross
+      rot: Math.random()*Math.PI*2,
+      rv: (Math.random()-.5)*.18
+    });
+  }
+  if(!looping) loop();
+}
+
+let looping=false;
+function loop(){
+  looping=true;
+  cx.clearRect(0,0,cv.width,cv.height);
+  parts.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy; p.vy+=p.g; p.vx*=.975;
+    p.life-=.016; p.rot+=p.rv;
+    const a=Math.max(0,p.life/p.ml);
+    cx.globalAlpha=a;
+    cx.fillStyle=cx.strokeStyle=p.col;
+
+    if(p.type<.45){
+      cx.beginPath();
+      cx.arc(p.x,p.y,p.sz*a,0,Math.PI*2);
+      cx.fill();
+    } else if(p.type<.72){
+      cx.save(); cx.translate(p.x,p.y); cx.rotate(p.rot);
+      cx.lineWidth=p.sz*.45;
+      cx.beginPath(); cx.moveTo(-p.sz*2.5,0); cx.lineTo(p.sz*2.5,0); cx.stroke();
+      cx.restore();
+    } else {
+      cx.save(); cx.translate(p.x,p.y); cx.rotate(p.rot);
+      cx.lineWidth=p.sz*.38;
+      cx.beginPath(); cx.moveTo(-p.sz*2,0); cx.lineTo(p.sz*2,0); cx.moveTo(0,-p.sz*2); cx.lineTo(0,p.sz*2); cx.stroke();
+      cx.restore();
     }
+  });
+  cx.globalAlpha=1;
+  parts=parts.filter(p=>p.life>0);
+  if(parts.length){ requestAnimationFrame(loop); } else { looping=false; cx.clearRect(0,0,cv.width,cv.height); }
+}
 
-    async function fetchData(apiId, paramName) {
-        const inputElem = document.getElementById(`input-${apiId}`);
-        let value = inputElem.value.trim();
-        if (!value) {
-            value = inputElem.placeholder;
-        }
-        
-        const responseDiv = document.getElementById(`response-${apiId}`);
-        responseDiv.innerHTML = '<div class="loading">🔥 DEMON fetching...</div>';
-        
-        try {
-            const url = `/api/${apiId}?${paramName}=${encodeURIComponent(value)}`;
-            const res = await fetch(url);
-            
-            if (!res.ok) {
-                throw new Error(`HTTP ${res.status}`);
-            }
-            
-            const data = await res.json();
-            responseDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-        } catch (err) {
-            responseDiv.innerHTML = `<div class="error">💀 ERROR: ${err.message}</div>`;
-        }
-    }
+/* ── Cursor ── */
+const cur=document.getElementById('cur'), ring=document.getElementById('ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+});
+(function rl(){
+  rx+=(mx-rx)*.13; ry+=(my-ry)*.13;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(rl);
+})();
 
-    renderCards();
+render();
 </script>
 </body>
 </html>
