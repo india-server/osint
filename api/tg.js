@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
 
-    const { userid } = req.query;
+    let { userid } = req.query;
 
     if (!userid) {
         return res.status(400).json({
@@ -9,6 +9,12 @@ export default async function handler(req, res) {
             message: "Telegram user ID daalo"
         });
     }
+
+    // 🔥 Remove @ symbol if present in userid
+    const cleanUserid = userid.replace(/^@/, '');
+    
+    // 📝 Log with original and cleaned userid
+    console.log(`📥 Request received - Original: ${userid}, Cleaned: ${cleanUserid} | Provider: @aerivue`);
 
     const BASE_URL = process.env.AERIVUE_BASE;
     const API_KEY = process.env.TG_API_KEY;
@@ -29,7 +35,7 @@ export default async function handler(req, res) {
 
     try {
         const response = await fetch(
-            `${BASE_URL}/tg?userid=${encodeURIComponent(userid)}&apikey=${API_KEY}`
+            `${BASE_URL}/tg?userid=${encodeURIComponent(cleanUserid)}&apikey=${API_KEY}`
         );
 
         const data = await response.json();
@@ -46,17 +52,21 @@ export default async function handler(req, res) {
             });
         }
 
-        // ✅ Normal response
+        // ✅ Normal response with provider info
         return res.status(200).json({
             status: true,
-            data: data
+            data: data,
+            provider: "@aerivue"
         });
 
     } catch (error) {
+        console.error(`❌ Error for user ${cleanUserid} | Provider: @aerivue -`, error.message);
+        
         return res.status(500).json({
             status: false,
             error: "Server Error",
-            message: error.message
+            message: error.message,
+            provider: "@aerivue"
         });
     }
 }
