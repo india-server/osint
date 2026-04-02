@@ -3,219 +3,794 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aerivue — Intelligence Redefined</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700&family=JetBrains+Mono&family=Unbounded:wght@400;800&display=swap" rel="stylesheet">
-
+<title>Aerivue — Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+:root {
+  --bg:       #030310;
+  --bg2:      #07071a;
+  --cyan:     #00d4ff;
+  --purple:   #a855f7;
+  --gold:     #f0b429;
+  --text:     #c8d6e5;
+  --dim:      #4a5568;
+  --border:   rgba(0,212,255,0.12);
+  --card-bg:  rgba(255,255,255,0.025);
+  --glow-c:   rgba(0,212,255,0.25);
+  --glow-p:   rgba(168,85,247,0.25);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
 html{scroll-behavior:smooth;}
+
 body{
-  margin:0;
-  background:#06060f;
-  color:#fff;
+  background:var(--bg);
+  color:var(--text);
   font-family:'Syne',sans-serif;
+  overflow-x:hidden;
 }
 
-/* NAV */
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:2px;}
+
+/* ─── GRID BG ─── */
+.grid-bg{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+}
+
+/* ─── NAV ─── */
 nav{
-  position:fixed;
-  width:100%;
-  top:0;
-  display:flex;
-  justify-content:space-between;
-  padding:15px 40px;
-  background:rgba(0,0,0,0.6);
-  backdrop-filter:blur(10px);
-  z-index:100;
+  position:fixed;width:100%;top:0;z-index:999;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:18px 50px;
+  background:rgba(3,3,16,0.7);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  transition:padding .3s;
 }
-nav a{
-  color:#aaa;
-  text-decoration:none;
-  margin:0 10px;
-}
-nav a:hover{color:#fff}
+nav.scrolled{padding:12px 50px;}
 
-/* HERO */
+/* LOGO */
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+.logo-icon{width:36px;height:36px;flex-shrink:0;}
+.logo-text{
+  font-family:'Orbitron',monospace;
+  font-weight:700;font-size:18px;letter-spacing:3px;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+
+/* NAV LINKS */
+.nav-links{display:flex;align-items:center;gap:8px;}
+.nav-links a{
+  color:var(--dim);text-decoration:none;
+  font-size:13px;letter-spacing:1.5px;text-transform:uppercase;
+  padding:8px 16px;border-radius:6px;
+  transition:all .25s;position:relative;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);
+  width:0;height:1px;background:var(--cyan);transition:width .25s;
+}
+.nav-links a:hover{color:#fff;}
+.nav-links a:hover::after{width:60%;}
+.nav-cta{
+  padding:8px 22px !important;
+  border:1px solid var(--cyan) !important;
+  color:var(--cyan) !important;
+  border-radius:6px !important;
+  font-size:12px !important;
+}
+.nav-cta:hover{background:var(--cyan) !important;color:#000 !important;}
+
+/* ─── HERO ─── */
 .hero{
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
+  position:relative;height:100vh;
+  display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;
+  padding:0 20px;overflow:hidden;
 }
+.hero-orb{
+  position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;
+}
+.orb1{width:500px;height:500px;background:rgba(0,212,255,0.08);top:-100px;right:-100px;animation:orbFloat 8s ease-in-out infinite;}
+.orb2{width:400px;height:400px;background:rgba(168,85,247,0.08);bottom:-80px;left:-80px;animation:orbFloat 10s ease-in-out infinite reverse;}
+@keyframes orbFloat{0%,100%{transform:translate(0,0);}50%{transform:translate(30px,-30px);}}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 16px;border:1px solid var(--border);border-radius:100px;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);
+  margin-bottom:28px;animation:fadeUp .8s .1s both;
+  background:rgba(0,212,255,0.05);
+}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,212,255,0.4);}50%{box-shadow:0 0 0 6px rgba(0,212,255,0);}}
+
 .hero h1{
-  font-size:60px;
+  font-family:'Orbitron',monospace;
+  font-size:clamp(40px,7vw,88px);
+  font-weight:900;line-height:1.05;
+  letter-spacing:-1px;
+  animation:fadeUp .8s .2s both;
 }
-.hero p{
-  max-width:500px;
-  color:#aaa;
+.hero h1 span{
+  display:block;
+  background:linear-gradient(135deg,var(--cyan) 0%,var(--purple) 60%,var(--gold) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
-
-/* BUTTON */
-.btn{
-  margin-top:20px;
-  padding:12px 30px;
-  background:linear-gradient(135deg,#7c3aed,#22d3ee);
-  border:none;
-  color:#fff;
-  border-radius:10px;
-  cursor:pointer;
+.hero-sub{
+  max-width:520px;color:var(--dim);font-size:16px;line-height:1.7;
+  margin:20px auto 36px;animation:fadeUp .8s .3s both;
 }
 
-/* SECTION */
-section{
-  padding:100px 20px;
-  max-width:1100px;
-  margin:auto;
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp .8s .4s both;}
+.btn-primary{
+  padding:14px 32px;border-radius:8px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;
+  letter-spacing:1px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s;
 }
+.btn-primary::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--purple),var(--cyan));
+  opacity:0;transition:opacity .3s;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 20px 40px rgba(0,212,255,0.3);}
+.btn-primary:hover::before{opacity:1;}
+.btn-primary span{position:relative;z-index:1;}
 
-/* SERVICES */
-.grid{
+.btn-outline{
+  padding:14px 32px;border-radius:8px;cursor:pointer;
+  border:1px solid var(--border);background:transparent;
+  color:var(--text);font-family:'Syne',sans-serif;font-weight:600;font-size:14px;
+  letter-spacing:1px;transition:all .2s;
+}
+.btn-outline:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,212,255,0.05);}
+
+/* HERO SCROLL HINT */
+.scroll-hint{
+  position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  color:var(--dim);font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  animation:fadeUp .8s .6s both;
+}
+.scroll-line{width:1px;height:40px;background:linear-gradient(var(--cyan),transparent);animation:scrollPulse 2s infinite;}
+@keyframes scrollPulse{0%,100%{opacity:.3;}50%{opacity:1;}}
+
+/* ─── STATS ─── */
+.stats-strip{
+  position:relative;z-index:1;
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,0.015);
+}
+.stat-item{
+  padding:40px 20px;text-align:center;
+  border-right:1px solid var(--border);
+  transition:background .3s;
+}
+.stat-item:last-child{border-right:none;}
+.stat-item:hover{background:rgba(0,212,255,0.04);}
+.stat-num{
+  font-family:'Orbitron',monospace;font-size:36px;font-weight:700;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  line-height:1;
+}
+.stat-label{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-top:8px;}
+
+/* ─── SECTION COMMON ─── */
+.section{
+  position:relative;z-index:1;
+  padding:120px 50px;
+  max-width:1200px;margin:auto;
+}
+.section-header{margin-bottom:64px;}
+.section-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:3px;text-transform:uppercase;color:var(--cyan);
+  margin-bottom:16px;
+}
+.section-tag::before{content:'//';color:var(--dim);}
+.section h2{
+  font-family:'Orbitron',monospace;
+  font-size:clamp(28px,4vw,48px);font-weight:700;
+  color:#fff;line-height:1.15;
+}
+.section-desc{color:var(--dim);font-size:15px;line-height:1.7;max-width:500px;margin-top:12px;}
+
+/* ─── SERVICES ─── */
+.services-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:20px;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:1px;
+  border:1px solid var(--border);border-radius:16px;overflow:hidden;
 }
-.card{
-  background:#111;
-  padding:20px;
-  border-radius:15px;
-  border:1px solid #222;
+.service-card{
+  background:var(--card-bg);
+  padding:40px 32px;
+  transition:background .3s;
+  position:relative;overflow:hidden;cursor:default;
+}
+.service-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 0% 0%,rgba(0,212,255,0.08),transparent 60%);
+  opacity:0;transition:opacity .4s;
+}
+.service-card:hover{background:rgba(0,212,255,0.04);}
+.service-card:hover::before{opacity:1;}
+
+.service-icon{
+  width:52px;height:52px;border-radius:12px;
+  background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);
+  display:flex;align-items:center;justify-content:center;margin-bottom:24px;
+  font-size:22px;transition:box-shadow .3s,transform .3s;
+}
+.service-card:hover .service-icon{
+  box-shadow:0 0 24px rgba(0,212,255,0.3);transform:scale(1.05);
+}
+.service-card h3{font-size:18px;font-weight:700;color:#fff;margin-bottom:10px;}
+.service-card p{font-size:14px;color:var(--dim);line-height:1.6;}
+.service-tag{
+  display:inline-block;margin-top:20px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:2px;text-transform:uppercase;
+  color:var(--cyan);background:rgba(0,212,255,0.08);
+  padding:4px 10px;border-radius:4px;
 }
 
-/* PORTFOLIO */
-.portfolio{
+/* ─── PORTFOLIO ─── */
+.portfolio-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  grid-template-columns:repeat(2,1fr);
   gap:20px;
 }
 .pcard{
-  position:relative;
-  overflow:hidden;
-  border-radius:15px;
+  position:relative;border-radius:16px;overflow:hidden;
+  border:1px solid var(--border);
+  background:var(--card-bg);
+  cursor:pointer;group:true;
 }
+.pcard:first-child{grid-row:span 2;}
 .pcard img{
-  width:100%;
-  height:200px;
-  object-fit:cover;
+  width:100%;height:100%;object-fit:cover;
+  transition:transform .5s,filter .5s;filter:brightness(0.5) saturate(0.6);
+  display:block;min-height:220px;
 }
-.overlay{
-  position:absolute;
-  bottom:0;
-  width:100%;
-  padding:15px;
-  background:linear-gradient(to top,black,transparent);
+.pcard:hover img{transform:scale(1.06);filter:brightness(0.4) saturate(0.8);}
+.pcard-overlay{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:28px;
+  background:linear-gradient(to top,rgba(3,3,16,0.9) 0%,transparent 60%);
+}
+.pcard-overlay h3{font-size:18px;font-weight:700;color:#fff;}
+.pcard-overlay p{font-size:13px;color:var(--dim);margin-top:4px;}
+.pcard-arrow{
+  position:absolute;top:20px;right:20px;
+  width:36px;height:36px;border-radius:8px;
+  background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.2);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--cyan);font-size:14px;
+  opacity:0;transform:translateY(-4px);transition:all .3s;
+}
+.pcard:hover .pcard-arrow{opacity:1;transform:translateY(0);}
+
+/* ─── WHY AERIVUE ─── */
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+.why-visual{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:20px;padding:40px;position:relative;overflow:hidden;
+}
+.why-visual::before{
+  content:'';position:absolute;top:-50%;left:-50%;
+  width:200%;height:200%;
+  background:conic-gradient(from 0deg at 50% 50%,transparent 0deg,rgba(0,212,255,0.03) 60deg,transparent 120deg);
+  animation:spin 12s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.terminal{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  line-height:1.8;position:relative;z-index:1;
+}
+.t-bar{
+  display:flex;gap:6px;margin-bottom:20px;
+}
+.t-dot{width:10px;height:10px;border-radius:50%;}
+.t-red{background:#ff5f57;}.t-yellow{background:#ffbd2e;}.t-green{background:#28ca41;}
+.t-line{color:var(--dim);}
+.t-cmd{color:var(--cyan);}
+.t-success{color:#4ade80;}
+.t-info{color:var(--purple);}
+
+.why-points{display:flex;flex-direction:column;gap:28px;}
+.why-point{
+  display:flex;gap:20px;align-items:flex-start;
+  padding:24px;border-radius:12px;border:1px solid transparent;
+  transition:all .3s;cursor:default;
+}
+.why-point:hover{background:var(--card-bg);border-color:var(--border);}
+.why-point-icon{
+  width:44px;height:44px;border-radius:10px;flex-shrink:0;
+  background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.2);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+.why-point h4{font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;}
+.why-point p{font-size:13px;color:var(--dim);line-height:1.6;}
+
+/* ─── CONTACT ─── */
+.contact-wrap{
+  display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;
+}
+.contact-info{display:flex;flex-direction:column;gap:24px;}
+.contact-chip{
+  display:inline-flex;align-items:center;gap:12px;
+  padding:16px 20px;border-radius:12px;border:1px solid var(--border);
+  background:var(--card-bg);font-size:13px;color:var(--text);
+  transition:border-color .3s,background .3s;
+}
+.contact-chip:hover{border-color:var(--cyan);background:rgba(0,212,255,0.04);}
+.contact-chip-icon{font-size:18px;}
+
+.contact-form{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:20px;padding:40px;display:flex;flex-direction:column;gap:16px;
+}
+.form-group{display:flex;flex-direction:column;gap:8px;}
+.form-group label{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);}
+.form-group input,
+.form-group textarea{
+  background:rgba(255,255,255,0.03);border:1px solid var(--border);
+  border-radius:8px;padding:12px 16px;color:#fff;
+  font-family:'Syne',sans-serif;font-size:14px;outline:none;
+  transition:border-color .25s,box-shadow .25s;resize:none;
+}
+.form-group input:focus,
+.form-group textarea:focus{
+  border-color:var(--cyan);
+  box-shadow:0 0 0 3px rgba(0,212,255,0.08);
+}
+.form-group textarea{height:120px;}
+
+/* ─── FOOTER ─── */
+footer{
+  position:relative;z-index:1;
+  border-top:1px solid var(--border);
+  padding:60px 50px 40px;
+}
+.footer-top{
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:40px;max-width:1200px;margin:0 auto 40px;
+}
+.footer-brand p{font-size:13px;color:var(--dim);line-height:1.7;margin-top:14px;max-width:260px;}
+.footer-col h5{
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--cyan);margin-bottom:16px;
+}
+.footer-col a{
+  display:block;font-size:13px;color:var(--dim);
+  text-decoration:none;margin-bottom:10px;transition:color .2s;
+}
+.footer-col a:hover{color:#fff;}
+.footer-bottom{
+  border-top:1px solid var(--border);padding-top:24px;
+  display:flex;justify-content:space-between;align-items:center;
+  max-width:1200px;margin:auto;
+}
+.footer-bottom p{font-size:12px;color:var(--dim);}
+.footer-bottom span{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--dim);letter-spacing:1px;
 }
 
-/* FOOTER */
-footer{
-  text-align:center;
-  padding:40px;
-  border-top:1px solid #222;
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(24px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s,transform .7s;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:900px){
+  nav{padding:14px 20px;}
+  .nav-links{display:none;}
+  .section{padding:80px 20px;}
+  .stats-strip{grid-template-columns:repeat(2,1fr);}
+  .portfolio-grid{grid-template-columns:1fr;}
+  .pcard:first-child{grid-row:span 1;}
+  .why-grid,.contact-wrap{grid-template-columns:1fr;}
+  .footer-top{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:550px){
+  .stats-strip{grid-template-columns:1fr 1fr;}
+  .stat-item{padding:28px 14px;}
+  .footer-top{grid-template-columns:1fr;}
 }
 </style>
 </head>
-
 <body>
 
-<!-- NAV -->
-<nav>
-  <div><b>AERIVUE</b></div>
-  <div>
+<!-- GRID BACKGROUND -->
+<div class="grid-bg"></div>
+
+<!-- ─── NAV ─── -->
+<nav id="navbar">
+  <a href="#home" class="logo">
+    <!-- CUSTOM SVG LOGO -->
+    <svg class="logo-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="lg1" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#00d4ff"/>
+          <stop offset="100%" stop-color="#a855f7"/>
+        </linearGradient>
+        <linearGradient id="lg2" x1="18" y1="2" x2="18" y2="34" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#a855f7" stop-opacity="0.15"/>
+        </linearGradient>
+      </defs>
+      <!-- Outer triangle -->
+      <path d="M18 2L34 32H2L18 2Z" fill="url(#lg2)" stroke="url(#lg1)" stroke-width="1.5"/>
+      <!-- Inner accent line -->
+      <path d="M18 10L26 26H10L18 10Z" fill="none" stroke="url(#lg1)" stroke-width="1" opacity="0.5"/>
+      <!-- Center dot -->
+      <circle cx="18" cy="21" r="2" fill="url(#lg1)"/>
+    </svg>
+    <span class="logo-text">AERIVUE</span>
+  </a>
+  <div class="nav-links">
     <a href="#home">Home</a>
     <a href="#services">Services</a>
     <a href="#portfolio">Portfolio</a>
-    <a href="#contact">Contact</a>
+    <a href="#why">Why Us</a>
+    <a href="#contact" class="nav-cta">Contact</a>
   </div>
 </nav>
 
-<!-- HERO -->
+<!-- ─── HERO ─── -->
 <div class="hero" id="home">
-  <h1>Intelligence<br>Redefined</h1>
-  <p>Powerful APIs for telecom, identity & data intelligence — all in one place.</p>
-  <a href="#services"><button class="btn">Explore</button></a>
+  <div class="hero-orb orb1"></div>
+  <div class="hero-orb orb2"></div>
+
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Now live — v2.0 API Released
+  </div>
+
+  <h1>Intelligence<br><span>Redefined</span></h1>
+  <p class="hero-sub">
+    Powerful APIs for telecom, identity & data intelligence — all in one unified platform. Fast, reliable, developer-first.
+  </p>
+
+  <div class="hero-btns">
+    <a href="#services"><button class="btn-primary"><span>Explore Services</span></button></a>
+    <a href="#contact"><button class="btn-outline">Get API Access</button></a>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
 </div>
 
-<!-- SERVICES -->
-<section id="services">
-  <h2>Services</h2>
-  <div class="grid">
+<!-- ─── STATS ─── -->
+<div class="stats-strip reveal">
+  <div class="stat-item">
+    <div class="stat-num" data-target="99.9">0</div>
+    <div class="stat-label">Uptime %</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num" data-target="50">0</div>
+    <div class="stat-label">ms Avg Latency</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num" data-target="10">0</div>
+    <div class="stat-label">M+ API Calls</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num" data-target="4">0</div>
+    <div class="stat-label">Core APIs</div>
+  </div>
+</div>
 
-    <div class="card">
+<!-- ─── SERVICES ─── -->
+<section class="section" id="services">
+  <div class="section-header reveal">
+    <div class="section-tag">Services</div>
+    <h2>Everything You Need.<br>One Platform.</h2>
+    <p class="section-desc">From number intelligence to identity verification — our APIs are built for speed and accuracy at scale.</p>
+  </div>
+
+  <div class="services-grid reveal">
+    <div class="service-card">
+      <div class="service-icon">📡</div>
       <h3>Number Lookup</h3>
-      <p>Get telecom data instantly.</p>
+      <p>Get real-time telecom data including carrier info, number type, and geographic data for any mobile number.</p>
+      <span class="service-tag">REST API</span>
     </div>
-
-    <div class="card">
+    <div class="service-card">
+      <div class="service-icon">📱</div>
       <h3>IMEI Tracker</h3>
-      <p>Device intelligence system.</p>
+      <p>Device intelligence system for IMEI validation, manufacturer lookup, and blacklist status verification.</p>
+      <span class="service-tag">REST API</span>
     </div>
-
-    <div class="card">
+    <div class="service-card">
+      <div class="service-icon">🔐</div>
       <h3>Aadhar Verify</h3>
-      <p>Identity verification API.</p>
+      <p>Seamless identity verification API for Aadhaar-based KYC flows — fast, compliant, and secure.</p>
+      <span class="service-tag">REST API</span>
     </div>
-
-    <div class="card">
+    <div class="service-card">
+      <div class="service-icon">🚗</div>
       <h3>Vehicle Info</h3>
-      <p>RTO data lookup system.</p>
+      <p>Complete RTO data lookup including owner details, registration, insurance, and fitness certificate status.</p>
+      <span class="service-tag">REST API</span>
     </div>
-
   </div>
 </section>
 
-<!-- PORTFOLIO -->
-<section id="portfolio">
-  <h2>Portfolio</h2>
+<!-- ─── PORTFOLIO ─── -->
+<section class="section" id="portfolio">
+  <div class="section-header reveal">
+    <div class="section-tag">Portfolio</div>
+    <h2>Built for Builders.</h2>
+    <p class="section-desc">Real products powered by Aerivue APIs across fintech, logistics, and developer tooling.</p>
+  </div>
 
-  <div class="portfolio">
-
+  <div class="portfolio-grid reveal">
     <div class="pcard">
-      <img src="https://images.unsplash.com/photo-1551281044-8c5c8c1b9f52">
-      <div class="overlay">
-        <h3>Dashboard</h3>
-        <p>Realtime system</p>
+      <img src="https://images.unsplash.com/photo-1551281044-8c5c8c1b9f52?w=800" alt="Dashboard">
+      <div class="pcard-overlay">
+        <h3>Realtime Dashboard</h3>
+        <p>Analytics & monitoring system</p>
       </div>
+      <div class="pcard-arrow">↗</div>
     </div>
-
     <div class="pcard">
-      <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c">
-      <div class="overlay">
-        <h3>Tracking</h3>
-        <p>Device intelligence</p>
+      <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=600" alt="Tracking">
+      <div class="pcard-overlay">
+        <h3>IMEI Tracking</h3>
+        <p>Device intelligence engine</p>
       </div>
+      <div class="pcard-arrow">↗</div>
     </div>
-
     <div class="pcard">
-      <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085">
-      <div class="overlay">
+      <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600" alt="Dev Tools">
+      <div class="pcard-overlay">
         <h3>Developer Tools</h3>
-        <p>API integrations</p>
+        <p>API sandbox & integration</p>
       </div>
+      <div class="pcard-arrow">↗</div>
     </div>
-
     <div class="pcard">
-      <img src="https://images.unsplash.com/photo-1518770660439-4636190af475">
-      <div class="overlay">
+      <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=600" alt="Data Engine">
+      <div class="pcard-overlay">
         <h3>Data Engine</h3>
-        <p>Processing system</p>
+        <p>High-throughput processing</p>
       </div>
+      <div class="pcard-arrow">↗</div>
     </div>
-
   </div>
 </section>
 
-<!-- CONTACT -->
-<section id="contact">
-  <h2>Contact</h2>
-  <p>Want to collaborate? Let's build something powerful.</p>
-  <button class="btn">Contact Me</button>
+<!-- ─── WHY AERIVUE ─── -->
+<section class="section" id="why" style="padding-top:60px;">
+  <div class="why-grid">
+    <div class="why-visual reveal">
+      <div class="terminal">
+        <div class="t-bar">
+          <div class="t-dot t-red"></div>
+          <div class="t-dot t-yellow"></div>
+          <div class="t-dot t-green"></div>
+        </div>
+        <div class="t-line">$ aerivue init --project myapp</div>
+        <div class="t-success">✓ Project initialized</div>
+        <br>
+        <div class="t-line">$ aerivue lookup --number +91XXXXXXXXXX</div>
+        <div class="t-cmd">{</div>
+        <div class="t-cmd">&nbsp;&nbsp;"carrier": "Jio",</div>
+        <div class="t-cmd">&nbsp;&nbsp;"type": "mobile",</div>
+        <div class="t-cmd">&nbsp;&nbsp;"state": "Uttar Pradesh",</div>
+        <div class="t-info">&nbsp;&nbsp;"status": "active"</div>
+        <div class="t-cmd">}</div>
+        <br>
+        <div class="t-success">✓ Response in 48ms</div>
+        <div class="t-line">$ _</div>
+      </div>
+    </div>
+
+    <div class="why-points reveal">
+      <div class="section-header" style="margin-bottom:32px;">
+        <div class="section-tag">Why Aerivue</div>
+        <h2>Precision.<br>Performance.<br>Trust.</h2>
+      </div>
+      <div class="why-point">
+        <div class="why-point-icon">⚡</div>
+        <div>
+          <h4>Sub-100ms Responses</h4>
+          <p>Our distributed infrastructure ensures lightning-fast API responses across all regions of India.</p>
+        </div>
+      </div>
+      <div class="why-point">
+        <div class="why-point-icon">🔒</div>
+        <div>
+          <h4>Enterprise Security</h4>
+          <p>TLS 1.3 encryption, key-based auth, rate limiting — built for mission-critical applications.</p>
+        </div>
+      </div>
+      <div class="why-point">
+        <div class="why-point-icon">📖</div>
+        <div>
+          <h4>Developer-First Docs</h4>
+          <p>Comprehensive documentation, SDKs for Node, Python & PHP, and a live sandbox to test instantly.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
-<!-- FOOTER -->
+<!-- ─── CONTACT ─── -->
+<section class="section" id="contact">
+  <div class="section-header reveal">
+    <div class="section-tag">Contact</div>
+    <h2>Let's Build Together.</h2>
+    <p class="section-desc">Want API access or a custom integration? Reach out and we'll get back within 24 hours.</p>
+  </div>
+
+  <div class="contact-wrap reveal">
+    <div class="contact-info">
+      <div class="contact-chip">
+        <span class="contact-chip-icon">📧</span>
+        hello@aerivue.io
+      </div>
+      <div class="contact-chip">
+        <span class="contact-chip-icon">💬</span>
+        Live chat support available
+      </div>
+      <div class="contact-chip">
+        <span class="contact-chip-icon">🌐</span>
+        API docs at docs.aerivue.io
+      </div>
+      <div class="contact-chip">
+        <span class="contact-chip-icon">📍</span>
+        Lucknow, Uttar Pradesh, India
+      </div>
+    </div>
+
+    <div class="contact-form">
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" placeholder="John Doe">
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" placeholder="you@company.com">
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea placeholder="Tell us about your use case..."></textarea>
+      </div>
+      <button class="btn-primary" style="width:100%;"><span>Send Message →</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
 <footer>
-  © 2026 Aerivue — Intelligence Engineered
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="#home" class="logo">
+        <svg class="logo-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="flg1" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#a855f7"/>
+            </linearGradient>
+            <linearGradient id="flg2" x1="18" y1="2" x2="18" y2="34" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.6"/><stop offset="100%" stop-color="#a855f7" stop-opacity="0.15"/>
+            </linearGradient>
+          </defs>
+          <path d="M18 2L34 32H2L18 2Z" fill="url(#flg2)" stroke="url(#flg1)" stroke-width="1.5"/>
+          <path d="M18 10L26 26H10L18 10Z" fill="none" stroke="url(#flg1)" stroke-width="1" opacity="0.5"/>
+          <circle cx="18" cy="21" r="2" fill="url(#flg1)"/>
+        </svg>
+        <span class="logo-text">AERIVUE</span>
+      </a>
+      <p>Powerful APIs for telecom, identity & data intelligence — all in one place.</p>
+    </div>
+
+    <div class="footer-col">
+      <h5>Product</h5>
+      <a href="#services">Number Lookup</a>
+      <a href="#services">IMEI Tracker</a>
+      <a href="#services">Aadhar Verify</a>
+      <a href="#services">Vehicle Info</a>
+    </div>
+
+    <div class="footer-col">
+      <h5>Developers</h5>
+      <a href="#">Documentation</a>
+      <a href="#">API Reference</a>
+      <a href="#">Changelog</a>
+      <a href="#">Status</a>
+    </div>
+
+    <div class="footer-col">
+      <h5>Company</h5>
+      <a href="#">About</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#contact">Contact</a>
+      <a href="#">Privacy Policy</a>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2026 Aerivue — Intelligence Engineered.</p>
+    <span>v2.0.0 · India</span>
+  </div>
 </footer>
 
+<script>
+// ── Navbar scroll effect
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ── Reveal on scroll
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.12 });
+reveals.forEach(r => observer.observe(r));
+
+// ── Counter animation
+function animateCounter(el) {
+  const target = parseFloat(el.dataset.target);
+  const isDecimal = target % 1 !== 0;
+  const duration = 1800;
+  const start = performance.now();
+  function update(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    const val = target * ease;
+    el.textContent = isDecimal ? val.toFixed(1) : Math.floor(val);
+    if (progress < 1) requestAnimationFrame(update);
+    else el.textContent = isDecimal ? target.toFixed(1) : target;
+  }
+  requestAnimationFrame(update);
+}
+
+const counterObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.stat-num').forEach(animateCounter);
+      counterObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelector('.stats-strip') && counterObs.observe(document.querySelector('.stats-strip'));
+
+// ── Smooth nav active highlight
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior:'smooth' }); }
+  });
+});
+</script>
 </body>
 </html>
