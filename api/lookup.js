@@ -11,7 +11,7 @@ export default async function handler(req, res) {
         });
     }
 
-    const BASE_URL = process.env.AERIVUE_BASE;
+    const BASE_URL = "aerivue.onrender.com";
     const API_KEY = process.env.LOOKUP_API_KEY;
 
     // 🔥 Deep Branding Inject
